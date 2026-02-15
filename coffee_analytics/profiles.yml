@@ -1,0 +1,8 @@
+coffee_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      # This path must point to the yourdatabase
+      path: "/Users/pranavkalwad/Desktop/Pranav/Career/local_etl_pipeline_duckdb_and_dbt/coffeeshop.duckdb"
+      threads: 1

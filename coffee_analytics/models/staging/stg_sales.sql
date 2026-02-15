@@ -1,0 +1,1 @@
+select * from {{source('bean_raw', 'source_sales')}} limit 10
