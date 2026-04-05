@@ -1,0 +1,5 @@
+duckdb
+pyspark
+delta-spark
+pandas</content>
+<parameter name="filePath">/Users/pranavkalwad/Desktop/Pranav/Career/local_etl_pipeline_duckdb_and_dbt/requirements.txt
