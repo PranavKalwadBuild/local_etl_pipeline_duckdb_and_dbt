@@ -6,3 +6,12 @@ coffee_analytics:
       # This path must point to the yourdatabase
       path: "/Users/pranavkalwad/Desktop/Pranav/Career/local_etl_pipeline_duckdb_and_dbt/coffeeshop.duckdb"
       threads: 1
+
+    fusion:
+      type: duckdb
+      path: "/Users/pranavkalwad/Desktop/Pranav/Career/local_etl_pipeline_duckdb_and_dbt/coffeeshop.duckdb"
+      threads: 1
+      # Use this target when you want to run dbt using the fusion engine.
+      # You can add fusion-specific DuckDB settings here as needed.
+      # settings:
+      #   some_duckdb_setting: true

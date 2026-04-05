@@ -71,7 +71,46 @@ cd coffee_analytics
 dbt run
 ```
 
-### 5. Query Data
+### 4.1 Run DBT with Engine Selection
+
+Use the wrapper script to choose between the normal dbt target and the fusion target:
+
+```bash
+python run_dbt.py --engine normal
+python run_dbt.py --engine fusion
+```
+
+If you want to pass additional dbt flags, provide them after the engine option:
+
+```bash
+python run_dbt.py --engine fusion test --models my_model
+```
+
+### 5. Minimal MCP Server
+
+A minimal MCP server is provided by `mcp_server.py`.
+
+Start it with:
+
+```bash
+python mcp_server.py
+```
+
+Then verify the health endpoint:
+
+```bash
+curl http://localhost:8080/health
+```
+
+Send a minimal MCP request to the `/mcp` endpoint:
+
+```bash
+curl -X POST http://localhost:8080/mcp \
+  -H 'Content-Type: application/json' \
+  -d '{"input": "hello"}'
+```
+
+### 6. Query Data
 
 Use the interactive query script:
 

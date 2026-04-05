@@ -314,7 +314,24 @@ SELECT
     "Total Revenue" as total_revenue
 FROM {{ source('delta', 'sales') }}
 ```
+### Run DBT with Engine Selection
 
+The project now includes two dbt targets in `coffee_analytics/profiles.yml`:
+- `dev`: the default normal engine target
+- `fusion`: the engine selection target for fusion-style runs
+
+Use the wrapper script from the repo root to run dbt with the desired engine:
+
+```bash
+python run_dbt.py --engine normal
+python run_dbt.py --engine fusion
+```
+
+You can also pass additional dbt arguments after the engine flag:
+
+```bash
+python run_dbt.py --engine fusion test --models my_model
+```
 ### Source Configuration
 
 Update `coffee_analytics/models/sources.yml`:
