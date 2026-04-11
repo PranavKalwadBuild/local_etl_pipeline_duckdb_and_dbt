@@ -2,7 +2,7 @@ FROM apache/airflow:2.7.3
 
 USER root
 RUN apt-get update \
-    && apt-get install -y git \
+    && apt-get install -y git docker.io \
     && rm -rf /var/lib/apt/lists/*
 
 USER airflow

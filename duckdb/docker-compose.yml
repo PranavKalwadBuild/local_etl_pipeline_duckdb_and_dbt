@@ -1,0 +1,21 @@
+services:
+  # Interactive SQL shell against coffeeshop.duckdb
+  duckdb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../:/app        # mounts entire repo: scripts, data/, coffeeshop.duckdb
+    working_dir: /app
+    tty: true
+    stdin_open: true    # required for the interactive query_duckdb.py REPL
+
+  # One-shot loader: reads data/ CSVs and writes raw schema into coffeeshop.duckdb
+  load:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../:/app
+    working_dir: /app
+    command: ["python", "load.py"]

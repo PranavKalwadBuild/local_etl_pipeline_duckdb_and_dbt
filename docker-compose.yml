@@ -1,0 +1,37 @@
+services:
+
+  # Reads data/CSVs and loads them into coffeeshop.duckdb (raw schema)
+  # Image: python:3.11-slim + duckdb
+  # Run: docker compose run --rm load
+  load:
+    build:
+      context: ./duckdb
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["python", "load.py"]
+
+  # Reads data/CSVs and writes Delta Lake tables to delta_lake/
+  # Image: python:3.11-slim + openjdk-21 + pyspark + delta-spark
+  # Run: docker compose run --rm ingest
+  ingest:
+    build:
+      context: ./delta_lake
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["python", "ingest_delta.py"]
+
+  # Reads delta_lake/ tables and loads them into coffeeshop.duckdb (delta schema)
+  # Image: python:3.11-slim + openjdk-21 + pyspark + delta-spark + duckdb
+  # Run: docker compose run --rm delta_to_duckdb
+  delta_to_duckdb:
+    build:
+      context: ./delta_lake
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["python", "delta_to_duckdb.py"]

@@ -62,6 +62,23 @@ You can still use the original DuckDB loading script:
 python load.py
 ```
 
+### 3.1 DuckDB Docker Container
+
+A simple DuckDB container is available under `duckdb/`.
+It mounts the repository root into the container so `coffeeshop.duckdb`, `load.py`, and `query_duckdb.py` are accessible.
+
+```bash
+cd duckdb
+docker compose up --build duckdb
+```
+
+You can also run the interactive query prompt without starting the service:
+
+```bash
+cd duckdb
+docker compose run --rm duckdb
+```
+
 ### 4. DBT Transformations
 
 Navigate to the DBT project and run transformations:

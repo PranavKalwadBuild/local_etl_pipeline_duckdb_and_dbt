@@ -25,7 +25,9 @@ pip install -r requirements.txt
 ## Docker Compose mode
 
 A ready-to-use Docker Compose setup is provided in `airflow/docker-compose.yml`.
-This uses a local Airflow image built from `airflow/Dockerfile` and mounts the repository into the container.
+This uses a local Airflow image built from `airflow/Dockerfile`, mounts the repository into the container, and exposes the host Docker socket so Airflow can launch dbt in a separate dbt container.
+
+> Run the compose command from the repository root so `HOST_PROJECT_DIR` points to the correct host path.
 
 Build and start Airflow:
 

@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import os
 from datetime import datetime, timedelta
 from pathlib import Path
 
 from airflow import DAG
-from airflow.operators.bash import BashOperator
+from airflow.providers.docker.operators.docker import DockerOperator
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
-DBT_WRAPPER = ROOT_DIR / "run_dbt.py"
+HOST_PROJECT_DIR = os.environ.get("HOST_PROJECT_DIR", "/opt/airflow/project")
+DBT_IMAGE = os.environ.get("DBT_IMAGE", "coffee_analytics_dbt:latest")
+DBT_PROJECT_DIR = "/opt/app/coffee_analytics"
 
 default_args = {
     "owner": "airflow",
@@ -23,26 +25,58 @@ default_args = {
 with DAG(
     dag_id="coffee_analytics_dbt",
     default_args=default_args,
-    description="Run coffee_analytics dbt jobs using DuckDB.",
+    description="Run coffee_analytics dbt jobs using DuckDB in a container.",
     schedule_interval=None,
     start_date=datetime(2026, 1, 1),
     catchup=False,
     tags=["dbt", "coffee_analytics"],
 ) as dag:
 
-    dbt_debug = BashOperator(
+    dbt_debug = DockerOperator(
         task_id="dbt_debug",
-        bash_command=f"cd {ROOT_DIR} && python {DBT_WRAPPER} --engine normal -- debug",
+        image=DBT_IMAGE,
+        api_version="auto",
+        docker_url="unix://var/run/docker.sock",
+        command=(
+            f"debug --profiles-dir {DBT_PROJECT_DIR} "
+            f"--project-dir {DBT_PROJECT_DIR}"
+        ),
+        network_mode="bridge",
+        auto_remove=True,
+        volumes=[f"{HOST_PROJECT_DIR}:/opt/app:rw"],
+        working_dir=DBT_PROJECT_DIR,
+        tty=True,
     )
 
-    dbt_run = BashOperator(
+    dbt_run = DockerOperator(
         task_id="dbt_run",
-        bash_command=f"cd {ROOT_DIR} && python {DBT_WRAPPER} --engine normal -- run",
+        image=DBT_IMAGE,
+        api_version="auto",
+        docker_url="unix://var/run/docker.sock",
+        command=(
+            f"run --profiles-dir {DBT_PROJECT_DIR} "
+            f"--project-dir {DBT_PROJECT_DIR} --target dev"
+        ),
+        network_mode="bridge",
+        auto_remove=True,
+        volumes=[f"{HOST_PROJECT_DIR}:/opt/app:rw"],
+        working_dir=DBT_PROJECT_DIR,
+        tty=True,
     )
 
-    dbt_test = BashOperator(
+    dbt_test = DockerOperator(
         task_id="dbt_test",
-        bash_command=f"cd {ROOT_DIR} && python {DBT_WRAPPER} --engine normal -- test",
+        image=DBT_IMAGE,
+        api_version="auto",
+        docker_url="unix://var/run/docker.sock",
+        command=(
+            f"test --profiles-dir {DBT_PROJECT_DIR} " f"--project-dir {DBT_PROJECT_DIR}"
+        ),
+        network_mode="bridge",
+        auto_remove=True,
+        volumes=[f"{HOST_PROJECT_DIR}:/opt/app:rw"],
+        working_dir=DBT_PROJECT_DIR,
+        tty=True,
     )
 
     dbt_debug >> dbt_run >> dbt_test

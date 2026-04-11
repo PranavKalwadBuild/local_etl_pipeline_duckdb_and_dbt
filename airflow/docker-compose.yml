@@ -39,9 +39,11 @@ services:
       AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/project/airflow/dags
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
       PYTHONPATH: /opt/airflow/project
+      HOST_PROJECT_DIR: ${HOST_PROJECT_DIR:-${PWD}}
     volumes:
       - ..:/opt/airflow/project
       - airflow_logs:/opt/airflow/logs
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8080:8080"
     command: airflow webserver
@@ -59,11 +61,25 @@ services:
       AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/project/airflow/dags
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
       PYTHONPATH: /opt/airflow/project
+      HOST_PROJECT_DIR: ${HOST_PROJECT_DIR:-${PWD}}
     volumes:
       - ..:/opt/airflow/project
       - airflow_logs:/opt/airflow/logs
+      - /var/run/docker.sock:/var/run/docker.sock
     command: airflow scheduler
 
+  coffee_analytics_dbt:
+    build:
+      context: ..
+      dockerfile: coffee_analytics/Dockerfile
+    image: coffee_analytics_dbt:latest
+    volumes:
+      - ..:/opt/app
+    working_dir: /opt/app/coffee_analytics
+    environment:
+      DBT_DUCKDB_PATH: ${DBT_DUCKDB_PATH:-/opt/app/coffeeshop.duckdb}
+      DBT_PROFILES_DIR: /opt/app/coffee_analytics
+    entrypoint: ["tail", "-f", "/dev/null"]
 
 volumes:
   postgres_data:
