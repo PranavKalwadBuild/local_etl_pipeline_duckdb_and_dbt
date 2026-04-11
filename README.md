@@ -86,6 +86,68 @@ If you want to pass additional dbt flags, provide them after the engine option:
 python run_dbt.py --engine fusion test --models my_model
 ```
 
+### 4.2 Airflow orchestration for DBT
+
+A basic Airflow DAG is provided at `airflow/dags/dbt_coffee_analytics_dag.py`.
+It uses the repository's `run_dbt.py` wrapper and the DuckDB dbt targets from `coffee_analytics/profiles.yml`.
+
+Read the Airflow documentation in `airflow/README.md` for Docker Compose and Kubernetes setup steps.
+
+A separate ingestion Airflow setup for PySpark is available in `airflow_ingestion/`.
+
+### 4.3 Containerized coffee_analytics dbt
+
+A dedicated dbt container is now available in `coffee_analytics/docker-compose.yml`.
+It builds from `coffee_analytics/Dockerfile` and mounts the repo at `/opt/app`.
+
+To use it:
+
+```bash
+cd /Users/pranavkalwad/Desktop/Pranav/Career/Modern-data-platform/coffee_analytics
+docker compose build
+```
+
+For DuckDB targets, set:
+
+```bash
+export DBT_DUCKDB_PATH=/opt/app/coffeeshop.duckdb
+```
+
+Then run:
+
+```bash
+docker compose run --rm coffee_analytics_dbt run \
+  --profiles-dir . \
+  --project-dir . \
+  --target dev
+```
+
+#### Astro CLI mode
+
+From the `airflow/` folder, run:
+
+```bash
+cd airflow
+astro dev start
+```
+
+Then open `http://localhost:8080` and trigger `coffee_analytics_dbt`.
+
+#### Docker Compose mode
+
+Alternatively, use the existing Docker Compose setup in `airflow/docker-compose.yml`:
+
+```bash
+cd /Users/pranavkalwad/Desktop/Pranav/Career/Modern-data-platform
+docker compose -f airflow/docker-compose.yml up airflow-init
+```
+
+Run the local dbt command directly to validate the dbt flow before Airflow execution:
+
+```bash
+python run_dbt.py --engine normal
+```
+
 ### 5. Minimal MCP Server
 
 A minimal MCP server is provided by `mcp_server.py`.

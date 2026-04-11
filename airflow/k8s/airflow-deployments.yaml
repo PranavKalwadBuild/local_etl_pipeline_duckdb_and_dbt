@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-webserver
+  namespace: airflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: airflow-webserver
+  template:
+    metadata:
+      labels:
+        app: airflow-webserver
+    spec:
+      containers:
+        - name: webserver
+          image: local/modern-data-platform-airflow:latest
+          command: ["bash", "-cx", "airflow webserver"]
+          ports:
+            - containerPort: 8080
+          env:
+            - name: AIRFLOW__CORE__EXECUTOR
+              value: LocalExecutor
+            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+              value: postgresql+psycopg2://airflow:airflow@airflow-postgres.airflow.svc.cluster.local:5432/airflow
+            - name: AIRFLOW__CORE__DAGS_FOLDER
+              value: /opt/airflow/project/airflow/dags
+            - name: AIRFLOW__CORE__LOAD_EXAMPLES
+              value: "False"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-scheduler
+  namespace: airflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: airflow-scheduler
+  template:
+    metadata:
+      labels:
+        app: airflow-scheduler
+    spec:
+      containers:
+        - name: scheduler
+          image: local/modern-data-platform-airflow:latest
+          command: ["bash", "-cx", "airflow scheduler"]
+          env:
+            - name: AIRFLOW__CORE__EXECUTOR
+              value: LocalExecutor
+            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+              value: postgresql+psycopg2://airflow:airflow@airflow-postgres.airflow.svc.cluster.local:5432/airflow
+            - name: AIRFLOW__CORE__DAGS_FOLDER
+              value: /opt/airflow/project/airflow/dags
+            - name: AIRFLOW__CORE__LOAD_EXAMPLES
+              value: "False"

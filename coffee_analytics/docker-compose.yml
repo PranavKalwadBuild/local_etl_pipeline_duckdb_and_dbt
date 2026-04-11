@@ -1,0 +1,12 @@
+services:
+  coffee_analytics_dbt:
+    build:
+      context: ..
+      dockerfile: coffee_analytics/Dockerfile
+    volumes:
+      - ..:/opt/app
+    working_dir: /opt/app/coffee_analytics
+    environment:
+      DBT_DUCKDB_PATH: ${DBT_DUCKDB_PATH:-/opt/app/coffeeshop.duckdb}
+      DBT_PROFILES_DIR: /opt/app/coffee_analytics
+    entrypoint: ["dbt"]

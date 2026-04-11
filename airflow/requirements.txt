@@ -1,7 +1,3 @@
-duckdb
-pyspark
-delta-spark
-pandas
 apache-airflow==2.7.3
 apache-airflow-providers-microsoft-azure==7.0.0
 dbt-core>=1.6,<2

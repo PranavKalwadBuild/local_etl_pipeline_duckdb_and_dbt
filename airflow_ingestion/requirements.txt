@@ -1,0 +1,6 @@
+duckdb==1.2.2
+pyspark
+delta-spark
+pandas
+apache-airflow==2.7.3
+psycopg2-binary

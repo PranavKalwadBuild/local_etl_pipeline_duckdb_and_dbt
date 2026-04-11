@@ -35,7 +35,10 @@ def parse_args():
 
 def main():
     args = parse_args()
-    target = "dev" if args.engine == "normal" else "fusion"
+    if args.engine == "normal":
+        target = "dev"
+    elif args.engine == "fusion":
+        target = "fusion"
 
     if not args.dbt_args:
         dbt_args = ["run"]
